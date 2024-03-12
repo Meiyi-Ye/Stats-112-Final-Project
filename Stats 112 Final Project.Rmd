@@ -1,0 +1,679 @@
+---
+title: "Stats 112 Final Project"
+author: "Meiyi Ye"
+date: "2023-11-27"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+library(wordcloud)
+library(RColorBrewer)
+library(tm)
+library(quanteda)
+library(quanteda.textstats)
+library(quanteda.textplots)
+library(readtext)
+library(topicmodels)
+library(ldatuning)
+library(syuzhet)
+library(stringr)
+library(ngram)
+library(GPArotation)
+library(psych)
+```
+
+```{r}
+set.seed(1234)
+source("Final Project Helper Functions.R") # This .R file contains some functions useful to cleaning Corpus objects, and extracting the stems and dictionaries which are used to create word clouds, frequency plots, etc.
+```
+
+```{r}
+all_data <- data.frame(group = c("Group 1", "Group 2", "Group 3", "Group 4", "Group 5", "Group 6", "Group 7", "Group 8", "Solo"))
+```
+
+## Individual Most Used Words
+
+### Group 1
+
+```{r, warning=F}
+# Reading in text file
+Group.1 <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 1.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Group.1 <- clean.corpus.dict(Group.1)
+# Unstemming words to be used in frequency table
+dict <- dict.corpus(Group.1$corpus, Group.1$dictionary)
+# Reordering dictionary and plotting according to most to least frequent
+dict$word <- reorder(dict$word, dict$freq)
+ggplot(dict[1:10,], aes(reorder(word, freq), freq)) +
+  ggtitle("Top 10 Words in Group 1's Reflection")+
+  geom_bar(stat = "identity", fill = "pink", alpha = 0.6, width = 0.7) +
+  scale_y_continuous() +
+  geom_text(aes(label = freq), hjust = 1, vjust = 0.5, color = "white", size = 4) +
+  coord_flip()+
+  ylab("Frequency")+
+  xlab("Words")+
+  theme_bw()
+```
+
+```{r, warning=F}
+# Reading in text file
+Group.1 <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 1.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Group.1 <- clean.corpus.dict(Group.1)
+dict <- dict.corpus(Group.1$corpus, Group.1$dictionary)
+# Creating word cloud based on completed (not stemmed) words
+wordcloud(words = dict$word, freq = dict$freq, min.freq = 3, scale = c(3,.5), max.words = 50, 
+          random.order = FALSE, colors = brewer.pal(8, "Dark2"))
+# Adding list of stemmed words and dictionaries to data frame for final data submission
+all_data[all_data$group == "Group 1", "stems"] <- list(Group.1$stemmed_words)
+all_data[all_data$group == "Group 1", "dictionaries"] <- list(Group.1$dictionary_all)
+```
+
+### Group 2
+
+```{r, warning=F}
+# Reading in text file
+Group.2 <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 2.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Group.2 <- clean.corpus.dict(Group.2)
+# Unstemming words to be used in frequency table
+dict <- dict.corpus(Group.2$corpus, Group.2$dictionary)
+# Reordering dictionary and plotting according to most to least frequent
+dict$word <- reorder(dict$word, dict$freq)
+ggplot(dict[1:10,], aes(reorder(word, freq), freq)) +
+  ggtitle("Top 10 Words in Group 2's Reflection")+
+  geom_bar(stat = "identity", fill = "steelblue", alpha = 0.6, width = 0.7) +
+  scale_y_continuous() +
+  geom_text(aes(label = freq), hjust = 1, vjust = 0.5, color = "white", size = 4) +
+  coord_flip()+
+  ylab("Frequency")+
+  xlab("Words")+
+  theme_bw()
+```
+
+```{r, warning=F}
+# Reading in text file
+Group.2 <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 2.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Group.2 <- clean.corpus.dict(Group.2)
+dict <- dict.corpus(Group.2$corpus, Group.2$dictionary)
+# Creating word cloud based on completed (not stemmed) words
+wordcloud(words = dict$word, freq = dict$freq, min.freq = 3, scale = c(3,.5), max.words = 50, 
+          random.order = FALSE, colors = brewer.pal(8, "Dark2"))
+# Adding list of stemmed words and dictionaries to data frame for final data submission
+all_data[all_data$group == "Group 2", "stems"] <- list(Group.2$stemmed_words)
+all_data[all_data$group == "Group 2", "dictionaries"] <- list(Group.2$dictionary_all)
+```
+
+### Group 3
+
+```{r, warning=F}
+# Reading in text file
+Group.3 <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 3.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Group.3 <- clean.corpus.dict(Group.3)
+# Unstemming words to be used in frequency table
+dict <- dict.corpus(Group.3$corpus, Group.3$dictionary)
+# Reordering dictionary and plotting according to most to least frequent
+dict$word <- reorder(dict$word, dict$freq)
+dict <- dict[-2,]
+dict <- dict[-7,]
+ggplot(dict[1:10,], aes(reorder(word, freq), freq)) +
+  ggtitle("Top 10 Words in Group 3's Reflection")+
+  geom_bar(stat = "identity", fill = "darkorchid", alpha = 0.6, width = 0.7) +
+  scale_y_continuous() +
+  geom_text(aes(label = freq), hjust = 1, vjust = 0.5, color = "white", size = 4) +
+  coord_flip()+
+  ylab("Frequency")+
+  xlab("Words")+
+  theme_bw()
+```
+
+```{r, warning=F}
+# Reading in text file
+Group.3 <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 3.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Group.3 <- clean.corpus.dict(Group.3)
+dict <- dict.corpus(Group.3$corpus, Group.3$dictionary)
+# Creating word cloud based on completed (not stemmed) words
+wordcloud(words = dict$word, freq = dict$freq, min.freq = 3, scale = c(3,.5), max.words = 50, 
+          random.order = FALSE, colors = brewer.pal(8, "Dark2"))
+# Adding list of stemmed words and dictionaries to data frame for final data submission
+all_data[all_data$group == "Group 3", "stems"] <- list(Group.3$stemmed_words)
+all_data[all_data$group == "Group 3", "dictionaries"] <- list(Group.3$dictionary_all)
+```
+
+### Group 4
+
+```{r, warning=F}
+# Reading in text file
+Group.4 <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 4.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Group.4 <- clean.corpus.dict(Group.4)
+# Unstemming words to be used in frequency table
+dict <- dict.corpus(Group.4$corpus, Group.4$dictionary)
+# Reordering dictionary and plotting according to most to least frequent
+dict$word <- reorder(dict$word, dict$freq)
+levels(dict$word)[match(dict$word[5],levels(dict$word))] <- "families"
+ggplot(dict[1:10,], aes(reorder(word, freq), freq)) +
+  ggtitle("Top 10 Words in Group 4's Reflection")+
+  geom_bar(stat = "identity", fill = "firebrick3", alpha = 0.6, width = 0.7) +
+  scale_y_continuous() +
+  geom_text(aes(label = freq), hjust = 1, vjust = 0.5, color = "white", size = 4) +
+  coord_flip()+
+  ylab("Frequency")+
+  xlab("Words")+
+  theme_bw()
+```
+
+```{r, warning=F}
+# Reading in text file
+Group.4 <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 4.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Group.4 <- clean.corpus.dict(Group.4)
+dict <- dict.corpus(Group.4$corpus, Group.4$dictionary)
+dict$word <- reorder(dict$word, dict$freq)
+levels(dict$word)[match(dict$word[5],levels(dict$word))] <- "families"
+# Creating word cloud based on completed (not stemmed) words
+wordcloud(words = dict$word, freq = dict$freq, min.freq = 3, scale = c(3,.5), max.words = 50, 
+          random.order = FALSE, colors = brewer.pal(8, "Dark2"))
+# Adding list of stemmed words and dictionaries to data frame for final data submission
+all_data[all_data$group == "Group 4", "stems"] <- list(Group.4$stemmed_words)
+all_data[all_data$group == "Group 4", "dictionaries"] <- list(Group.4$dictionary_all)
+```
+
+### Group 5
+
+```{r, warning=F}
+# Reading in text file
+Group.5 <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 5.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Group.5 <- clean.corpus.dict(Group.5)
+# Unstemming words to be used in frequency table
+dict <- dict.corpus(Group.5$corpus, Group.5$dictionary)
+# Reordering dictionary and plotting according to most to least frequent
+dict$word <- reorder(dict$word, dict$freq)
+dict <- dict[-5,]
+ggplot(dict[1:10,], aes(reorder(word, freq), freq)) +
+  ggtitle("Top 10 Words in Group 5's Reflection")+
+  geom_bar(stat = "identity", fill = "darkseagreen4", alpha = 0.6, width = 0.7) +
+  scale_y_continuous() +
+  geom_text(aes(label = freq), hjust = 1, vjust = 0.5, color = "white", size = 4) +
+  coord_flip()+
+  ylab("Frequency")+
+  xlab("Words")+
+  theme_bw()
+```
+
+```{r, warning=F}
+# Reading in text file
+Group.5 <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 5.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Group.5 <- clean.corpus.dict(Group.5)
+dict <- dict.corpus(Group.5$corpus, Group.5$dictionary)
+dict$word <- reorder(dict$word, dict$freq)
+dict <- dict[-5,]
+# Creating word cloud based on completed (not stemmed) words
+wordcloud(words = dict$word, freq = dict$freq, min.freq = 3, scale = c(3,.5), max.words = 50, 
+          random.order = FALSE, colors = brewer.pal(8, "Dark2"))
+# Adding list of stemmed words and dictionaries to data frame for final data submission
+all_data[all_data$group == "Group 5", "stems"] <- list(Group.5$stemmed_words)
+all_data[all_data$group == "Group 5", "dictionaries"] <- list(Group.5$dictionary_all)
+```
+
+### Group 6
+
+```{r, warning=F}
+# Reading in text file
+Group.6 <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 6.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Group.6 <- clean.corpus.dict(Group.6)
+# Unstemming words to be used in frequency table
+dict <- dict.corpus(Group.6$corpus, Group.6$dictionary)
+# Reordering dictionary and plotting according to most to least frequent
+dict$word <- reorder(dict$word, dict$freq)
+ggplot(dict[1:10,], aes(reorder(word, freq), freq)) +
+  ggtitle("Top 10 Words in Group 6's Reflection")+
+  geom_bar(stat = "identity", fill = "sienna3", alpha = 0.6, width = 0.7) +
+  scale_y_continuous() +
+  geom_text(aes(label = freq), hjust = 1, vjust = 0.5, color = "white", size = 4) +
+  coord_flip()+
+  ylab("Frequency")+
+  xlab("Words")+
+  theme_bw()
+```
+
+```{r, warning=F}
+# Reading in text file
+Group.6 <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 6.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Group.6 <- clean.corpus.dict(Group.6)
+dict <- dict.corpus(Group.6$corpus, Group.6$dictionary)
+dict$word <- reorder(dict$word, dict$freq)
+# Creating word cloud based on completed (not stemmed) words
+wordcloud(words = dict$word, freq = dict$freq, min.freq = 3, scale = c(3,.5), max.words = 50, 
+          random.order = FALSE, colors = brewer.pal(8, "Dark2"))
+# Adding list of stemmed words and dictionaries to data frame for final data submission
+all_data[all_data$group == "Group 6", "stems"] <- list(Group.6$stemmed_words)
+all_data[all_data$group == "Group 6", "dictionaries"] <- list(Group.6$dictionary_all)
+```
+
+### Group 7
+
+```{r, warning=F}
+# Reading in text file
+Group.7 <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 7.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Group.7 <- clean.corpus.dict(Group.7)
+# Unstemming words to be used in frequency table
+dict <- dict.corpus(Group.7$corpus, Group.7$dictionary)
+# Reordering dictionary and plotting according to most to least frequent
+dict$word <- reorder(dict$word, dict$freq)
+dict <- dict[-9,]
+ggplot(dict[1:10,], aes(reorder(word, freq), freq)) +
+  ggtitle("Top 10 Words in Group 7's Reflection")+
+  geom_bar(stat = "identity", fill = "blue3", alpha = 0.6, width = 0.7) +
+  scale_y_continuous() +
+  geom_text(aes(label = freq), hjust = 1, vjust = 0.5, color = "white", size = 4) +
+  coord_flip()+
+  ylab("Frequency")+
+  xlab("Words")+
+  theme_bw()
+```
+
+```{r, warning=F}
+# Reading in text file
+Group.7 <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 7.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Group.7 <- clean.corpus.dict(Group.7)
+dict <- dict.corpus(Group.7$corpus, Group.7$dictionary)
+dict$word <- reorder(dict$word, dict$freq)
+# Creating word cloud based on completed (not stemmed) words
+wordcloud(words = dict$word, freq = dict$freq, min.freq = 3, scale = c(3,.5), max.words = 50, 
+          random.order = FALSE, colors = brewer.pal(8, "Dark2"))
+# Adding list of stemmed words and dictionaries to data frame for final data submission
+all_data[all_data$group == "Group 7", "stems"] <- list(Group.7$stemmed_words)
+all_data[all_data$group == "Group 7", "dictionaries"] <- list(Group.7$dictionary_all)
+```
+
+### Group 8
+
+```{r, warning=F}
+# Reading in text file
+Group.8 <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 8.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Group.8 <- clean.corpus.dict(Group.8)
+# Unstemming words to be used in frequency table
+dict <- dict.corpus(Group.8$corpus, Group.8$dictionary)
+# Reordering dictionary and plotting according to most to least frequent
+dict$word <- reorder(dict$word, dict$freq)
+levels(dict$word)[match(dict$word[10],levels(dict$word))] <- "families"
+ggplot(dict[1:10,], aes(reorder(word, freq), freq)) +
+  ggtitle("Top 10 Words in Group 8's Reflection")+
+  geom_bar(stat = "identity", fill = "gold4", alpha = 0.6, width = 0.7) +
+  scale_y_continuous() +
+  geom_text(aes(label = freq), hjust = 1, vjust = 0.5, color = "white", size = 4) +
+  coord_flip()+
+  ylab("Frequency")+
+  xlab("Words")+
+  theme_bw()
+```
+
+```{r, warning=F}
+# Reading in text file
+Group.8 <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 8.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Group.8 <- clean.corpus.dict(Group.8)
+dict <- dict.corpus(Group.8$corpus, Group.8$dictionary)
+dict$word <- reorder(dict$word, dict$freq)
+levels(dict$word)[match(dict$word[10],levels(dict$word))] <- "families"
+# Creating word cloud based on completed (not stemmed) words
+wordcloud(words = dict$word, freq = dict$freq, min.freq = 3, scale = c(3,.5), max.words = 50, 
+          random.order = FALSE, colors = brewer.pal(8, "Dark2"))
+# Adding list of stemmed words and dictionaries to data frame for final data submission
+all_data[all_data$group == "Group 8", "stems"] <- list(Group.8$stemmed_words)
+all_data[all_data$group == "Group 8", "dictionaries"] <- list(Group.8$dictionary_all)
+```
+
+### Solo
+
+```{r, warning=F}
+# Reading in text file
+Solo <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Solo.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Solo <- clean.corpus.dict(Solo)
+# Unstemming words to be used in frequency table
+dict <- dict.corpus(Solo$corpus, Solo$dictionary)
+# Reordering dictionary and plotting according to most to least frequent
+dict$word <- reorder(dict$word, dict$freq)
+levels(dict$word)[match(dict$word[3],levels(dict$word))] <- "families"
+ggplot(dict[1:10,], aes(reorder(word, freq), freq)) +
+  ggtitle("Top 10 Words in Solo's Reflection")+
+  geom_bar(stat = "identity", fill = "gray2", alpha = 0.6, width = 0.7) +
+  scale_y_continuous() +
+  geom_text(aes(label = freq), hjust = 1, vjust = 0.5, color = "white", size = 4) +
+  coord_flip()+
+  ylab("Frequency")+
+  xlab("Words")+
+  theme_bw()
+```
+
+```{r, warning=F}
+# Reading in text file
+Solo <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Solo.txt"), readerControl = list(language = "lat"))
+# Cleaning corpus by getting rid of extraneous words, stemming words
+Solo <- clean.corpus.dict(Solo)
+dict <- dict.corpus(Solo$corpus, Solo$dictionary)
+dict$word <- reorder(dict$word, dict$freq)
+levels(dict$word)[match(dict$word[10],levels(dict$word))] <- "families"
+# Creating word cloud based on completed (not stemmed) words
+wordcloud(words = dict$word, freq = dict$freq, min.freq = 3, scale = c(3,.5), max.words = 50, 
+          random.order = FALSE, colors = brewer.pal(8, "Dark2"))
+# Adding list of stemmed words and dictionaries to data frame for final data submission
+all_data[all_data$group == "Solo", "stems"] <- list(Solo$stemmed_words)
+all_data[all_data$group == "Solo", "dictionaries"] <- list(Solo$dictionary_all)
+```
+
+## Reflection Paper Commonality
+
+```{r, warning=F}
+Combination <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Combination.txt"), readerControl = list(language = "lat"))
+Combination <- clean.corpus.dict(Combination)
+dict <- dict.corpus(Combination$corpus, Combination$dictionary)
+dict$word <- reorder(dict$word, dict$freq)
+ggplot(dict[1:10,], aes(reorder(word, freq), freq)) +
+  ggtitle("Top 10 Words for Reflection Papers Combined")+
+  geom_bar(stat = "identity", fill = "pink", alpha = 0.6, width = 0.7) +
+  scale_y_continuous() +
+  geom_text(aes(label = freq), hjust = 1, vjust = 0.5, color = "white", size = 4) +
+  coord_flip()+
+  ylab("Frequency")+
+  xlab("Words")+
+  theme_bw()
+```
+
+```{r, warning=F}
+Combination <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Combination.txt"), readerControl = list(language = "lat"))
+Combination <- clean.corpus.dict(Combination)
+dict <- dict.corpus(Combination$corpus, Combination$dictionary)
+wordcloud(words = dict$word, freq = dict$freq, min.freq = 3, scale = c(3,.5), max.words = 50, 
+          random.order = FALSE, colors = brewer.pal(8, "Dark2"))
+```
+
+## Text Networks
+
+### Group 1
+
+```{r, warning=F}
+# For text networks, similar process of corpus cleaning, followed by usage of textplot_network to conduct text network analysis.
+Group.1.net <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 1.txt"), readerControl = list(language = "lat"))
+Group.1.net <- clean.corpus.dict(Group.1.net)
+text_help_Group_1 <- data.frame(text = as.character(Group.1.net), stringsAsFactors = FALSE)
+help.corpus.Group.1 <- corpus(text_help_Group_1)
+dfm.Group.1 <- dfm(help.corpus.Group.1, tolower = TRUE, remove_punct = TRUE, 
+                 remove_numbers = TRUE, remove = c("a", stopwords(source = "smart")))
+
+set.seed(123)
+low_fcm_1 <- fcm(dfm.Group.1)
+feat1 <- names(topfeatures(low_fcm_1, 30))
+low_fcm_11 <- fcm_select(low_fcm_1, feat1)
+
+size1 <- log(colSums(dfm_select(low_fcm_11, feat1)))
+textplot_network(low_fcm_11, min_freq = 0.80, vertex_size = size1 / min(size1) * 3 , 
+                 vertex_labelsize = size1 / min(size1) * 3.5, edge_color = "pink")
+```
+
+### Group 2
+
+```{r, warning=F}
+# For text networks, similar process of corpus cleaning, followed by usage of textplot_network to conduct text network analysis.
+Group.2.net <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 2.txt"), readerControl = list(language = "lat"))
+Group.2.net <- clean.corpus.dict(Group.2.net)
+text_help_Group_2 <- data.frame(text = as.character(Group.2.net), stringsAsFactors = FALSE)
+help.corpus.Group.2 <- corpus(text_help_Group_2)
+dfm.Group.2 <- dfm(help.corpus.Group.2, tolower = TRUE, remove_punct = TRUE, 
+                 remove_numbers = TRUE, remove = c("a", stopwords(source = "smart")))
+
+set.seed(123)
+low_fcm_2 <- fcm(dfm.Group.2)
+feat2 <- names(topfeatures(low_fcm_2, 30))
+low_fcm_22 <- fcm_select(low_fcm_2, feat2)
+
+size2 <- log(colSums(dfm_select(low_fcm_22, feat2)))
+textplot_network(low_fcm_22, min_freq = 0.80, vertex_size = size2 / min(size2) * 3 , 
+                 vertex_labelsize = size2 / min(size2) * 3.5)
+```
+
+### Group 3
+
+```{r, warning=F}
+# For text networks, similar process of corpus cleaning, followed by usage of textplot_network to conduct text network analysis.
+Group.3.net <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 3.txt"), readerControl = list(language = "lat"))
+Group.3.net <- clean.corpus.dict(Group.3.net)
+text_help_Group_3 <- data.frame(text = as.character(Group.3.net), stringsAsFactors = FALSE)
+help.corpus.Group.3 <- corpus(text_help_Group_3)
+dfm.Group.3 <- dfm(help.corpus.Group.3, tolower = TRUE, remove_punct = TRUE, 
+                 remove_numbers = TRUE, remove = c("a", stopwords(source = "smart")))
+
+set.seed(123)
+low_fcm_3 <- fcm(dfm.Group.3)
+feat3 <- names(topfeatures(low_fcm_3, 30))
+low_fcm_33 <- fcm_select(low_fcm_3, feat3)
+
+size3 <- log(colSums(dfm_select(low_fcm_33, feat3)))
+textplot_network(low_fcm_33, min_freq = 0.80, vertex_size = size3 / min(size3) * 3 , 
+                 vertex_labelsize = size3 / min(size3) * 3.5, edge_color = "darkorchid")
+```
+
+### Group 4
+
+```{r, warning=F}
+# For text networks, similar process of corpus cleaning, followed by usage of textplot_network to conduct text network analysis.
+Group.4.net <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 4.txt"), readerControl = list(language = "lat"))
+Group.4.net <- clean.corpus.dict(Group.4.net)
+text_help_Group_4 <- data.frame(text = as.character(Group.4.net), stringsAsFactors = FALSE)
+help.corpus.Group.4 <- corpus(text_help_Group_4)
+dfm.Group.4 <- dfm(help.corpus.Group.4, tolower = TRUE, remove_punct = TRUE, 
+                 remove_numbers = TRUE, remove = c("a", stopwords(source = "smart")))
+
+set.seed(123)
+low_fcm_4 <- fcm(dfm.Group.4)
+feat4 <- names(topfeatures(low_fcm_4, 30))
+low_fcm_44 <- fcm_select(low_fcm_4, feat4)
+
+size4 <- log(colSums(dfm_select(low_fcm_44, feat4)))
+textplot_network(low_fcm_44, min_freq = 0.80, vertex_size = size4 / min(size4) * 3 , 
+                 vertex_labelsize = size4 / min(size4) * 3.5, edge_color = "firebrick3")
+```
+
+### Group 5
+
+```{r, warning=F}
+# For text networks, similar process of corpus cleaning, followed by usage of textplot_network to conduct text network analysis.
+Group.5.net <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 5.txt"), readerControl = list(language = "lat"))
+Group.5.net <- clean.corpus.dict(Group.5.net)
+text_help_Group_5 <- data.frame(text = as.character(Group.5.net), stringsAsFactors = FALSE)
+help.corpus.Group.5 <- corpus(text_help_Group_5)
+dfm.Group.5 <- dfm(help.corpus.Group.5, tolower = TRUE, remove_punct = TRUE, 
+                 remove_numbers = TRUE, remove = c("a", stopwords(source = "smart")))
+
+set.seed(123)
+low_fcm_5 <- fcm(dfm.Group.5)
+feat5 <- names(topfeatures(low_fcm_5, 30))
+low_fcm_55 <- fcm_select(low_fcm_5, feat5)
+
+size5 <- log(colSums(dfm_select(low_fcm_55, feat5)))
+textplot_network(low_fcm_55, min_freq = 0.80, vertex_size = size5 / min(size5) * 3 , 
+                 vertex_labelsize = size5 / min(size5) * 3.5, edge_color = "darkseagreen4")
+```
+
+### Group 6
+
+```{r, warning=F}
+# For text networks, similar process of corpus cleaning, followed by usage of textplot_network to conduct text network analysis.
+Group.6.net <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 6.txt"), readerControl = list(language = "lat"))
+Group.6.net <- clean.corpus.dict(Group.6.net)
+text_help_Group_6 <- data.frame(text = as.character(Group.6.net), stringsAsFactors = FALSE)
+help.corpus.Group.6 <- corpus(text_help_Group_6)
+dfm.Group.6 <- dfm(help.corpus.Group.6, tolower = TRUE, remove_punct = TRUE, 
+                 remove_numbers = TRUE, remove = c("a", stopwords(source = "smart")))
+
+set.seed(123)
+low_fcm_6 <- fcm(dfm.Group.6)
+feat6 <- names(topfeatures(low_fcm_6, 30))
+low_fcm_66 <- fcm_select(low_fcm_6, feat6)
+
+size6 <- log(colSums(dfm_select(low_fcm_66, feat6)))
+textplot_network(low_fcm_66, min_freq = 0.80, vertex_size = size6 / min(size6) * 3 , 
+                 vertex_labelsize = size6 / min(size6) * 3.5, edge_color = "sienna3")
+```
+
+### Group 7
+
+```{r, warning=F}
+# For text networks, similar process of corpus cleaning, followed by usage of textplot_network to conduct text network analysis.
+Group.7.net <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 7.txt"), readerControl = list(language = "lat"))
+Group.7.net <- clean.corpus.dict(Group.7.net)
+text_help_Group_7 <- data.frame(text = as.character(Group.7.net), stringsAsFactors = FALSE)
+help.corpus.Group.7 <- corpus(text_help_Group_7)
+dfm.Group.7 <- dfm(help.corpus.Group.7, tolower = TRUE, remove_punct = TRUE, 
+                 remove_numbers = TRUE, remove = c("a", stopwords(source = "smart")))
+
+set.seed(123)
+low_fcm_7 <- fcm(dfm.Group.7)
+feat7 <- names(topfeatures(low_fcm_7, 30))
+low_fcm_77 <- fcm_select(low_fcm_7, feat7)
+
+size7 <- log(colSums(dfm_select(low_fcm_77, feat7)))
+textplot_network(low_fcm_77, min_freq = 0.80, vertex_size = size7 / min(size7) * 3 , 
+                 vertex_labelsize = size7 / min(size7) * 3.5, edge_color = "blue")
+```
+
+### Group 8
+
+```{r, warning=F}
+# For text networks, similar process of corpus cleaning, followed by usage of textplot_network to conduct text network analysis.
+Group.8.net <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Group 8.txt"), readerControl = list(language = "lat"))
+Group.8.net <- clean.corpus.dict(Group.8.net)
+text_help_Group_8 <- data.frame(text = as.character(Group.8.net), stringsAsFactors = FALSE)
+help.corpus.Group.8 <- corpus(text_help_Group_8)
+dfm.Group.8 <- dfm(help.corpus.Group.8, tolower = TRUE, remove_punct = TRUE, 
+                 remove_numbers = TRUE, remove = c("a", stopwords(source = "smart")))
+
+set.seed(123)
+low_fcm_8 <- fcm(dfm.Group.8)
+feat8 <- names(topfeatures(low_fcm_8, 30))
+low_fcm_88 <- fcm_select(low_fcm_8, feat8)
+
+size8 <- log(colSums(dfm_select(low_fcm_88, feat8)))
+textplot_network(low_fcm_88, min_freq = 0.80, vertex_size = size8 / min(size8) * 3 , 
+                 vertex_labelsize = size8 / min(size8) * 3.5, edge_color = "gold3")
+```
+
+### Solo
+
+```{r, warning=F}
+# For text networks, similar process of corpus cleaning, followed by usage of textplot_network to conduct text network analysis.
+Solo.net <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Solo.txt"), readerControl = list(language = "lat"))
+Solo.net <- clean.corpus.dict(Solo.net)
+text_help_Solo <- data.frame(text = as.character(Solo.net), stringsAsFactors = FALSE)
+help.corpus.Solo <- corpus(text_help_Solo)
+dfm.Solo <- dfm(help.corpus.Solo, tolower = TRUE, remove_punct = TRUE, 
+                 remove_numbers = TRUE, remove = c("a", stopwords(source = "smart")))
+
+set.seed(123)
+low_fcm_s <- fcm(dfm.Solo)
+feats <- names(topfeatures(low_fcm_s, 30))
+low_fcm_ss <- fcm_select(low_fcm_s, feats)
+
+sizes <- log(colSums(dfm_select(low_fcm_ss, feats)))
+textplot_network(low_fcm_ss, min_freq = 0.80, vertex_size = sizes / min(sizes) * 3 , 
+                 vertex_labelsize = sizes / min(sizes) * 3.5, edge_color = "gray")
+```
+
+### Combination
+
+```{r, warning=F}
+Combo.Text <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Combination.txt"), readerControl = list(language = "lat"))
+Combo.Text <- clean.corpus.dict(Combo.Text)
+# Combo.Text <- clean.corpus.df(Combo.Text)
+text_help_Combo <- data.frame(text = as.character(Combo.Text),  stringsAsFactors = FALSE)
+help.corpus.Combo <- corpus(text_help_Combo)
+dfm.Combo <- dfm(help.corpus.Combo, tolower = TRUE, remove_punct = TRUE, 
+                remove_numbers = TRUE, remove = c("a", stopwords(source = "smart")))
+
+set.seed(123)
+low_fcm_Combo <- fcm(dfm.Combo)
+featCombo <- names(topfeatures(low_fcm_Combo, 30))
+low_fcm_2Combo <- fcm_select(low_fcm_Combo, featCombo)
+
+sizeCombo <- log(colSums(dfm_select(low_fcm_2Combo, featCombo)))
+textplot_network(low_fcm_2Combo, min_freq = 0.80, vertex_size = sizeCombo / min(sizeCombo) * 3 , vertex_labelsize = sizeCombo / min(sizeCombo) * 3.5, edge_color = "rosybrown")
+```
+
+## Cluster Dendrogram
+
+```{r, warning=F}
+## Read in and Clean Corpus Object
+Combination <- Corpus(DirSource("/Users/caitlinree/Desktop/stats 112/Final Project/", pattern = "Combination.txt"), readerControl = list(language = "lat"))
+Combination <- Combination %>% 
+  tm_map(removeURL) %>% 
+  tm_map(removeNumbers) %>% 
+  tm_map(rmHyphens) %>% 
+  tm_map(removePunctuation) %>% 
+  tm_map(stripWhitespace) %>% 
+  tm_map(tolower) %>% 
+  tm_map(removeWords, stopwords("english")) %>%
+  tm_map(removeWords, "will") %>% 
+  tm_map(removeSpecialChars) %>% 
+  tm_map(stemDocument, language = "english")
+```
+
+```{r, warning=F}
+## Create Term Document Matrix, Remove Sparse Terms, and Convert to Data Frame
+tdm <- TermDocumentMatrix(Combination) %>% removeSparseTerms(0.75) 
+df <- tdm %>% 
+  inspect() %>% 
+  as.data.frame()
+## Scale the Data Frame, Calculate the Distance of Words, and Calculate Word Clusters
+df.scale <- scale(df)
+d <- dist(df.scale, method = "euclidean")
+fit <- hclust(d, method = "ward.D")
+plot(fit)
+```
+
+## Topics Model
+
+```{r, warning=F}
+## Read and Clean Syllabi Text Data
+set.seed(1234)
+uml <- readtext("/Users/caitlinree/Desktop/stats 112/Final Project/Combination.txt")
+uml$text <- gsub("-", " ", uml$text)
+uml$text <- gsub("'", " ", uml$text)
+
+## Create and Clean Corpus Object
+uml.corp <- corpus(uml)
+uml.toks <- tokens(uml.corp, remove_punct = TRUE, remove_numbers = TRUE, 
+                   remove_symbols = TRUE, remove_separators = TRUE) %>% 
+  tokens_remove(stopwords("en")) %>% 
+  tokens_tolower() %>% 
+  tokens_select(pattern = c("?", "can"), selection = "remove")
+
+## Create Document-Feature Matrix and Convert to Topics Model
+uml.dtm <- dfm(uml.toks) %>% 
+  dfm_trim(min_count = 3) %>% 
+  convert(to = "topicmodels")
+
+## Plot to Determine Optimal Number of Topics for Topics Model
+results <- FindTopicsNumber(uml.dtm, topics = seq(from = 1, to = 20, by = 1), method = "Gibbs",
+                 c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"))
+FindTopicsNumber_plot(results)
+
+## Create and Print LDA Model
+lda.model <- LDA(uml.dtm, method = "Gibbs", k = 5)
+(topics <- terms(lda.model, 5))
+```
+
